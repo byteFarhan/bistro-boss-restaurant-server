@@ -7,7 +7,12 @@ const app = express();
 const prot = process.env.PORT || 5000;
 
 //middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@bistro-boss-cluster.lkmirp3.mongodb.net/?retryWrites=true&w=majority&appName=BISTRO-BOSS-Cluster`;
@@ -21,10 +26,19 @@ const client = new MongoClient(uri, {
   },
 });
 
+// DB Collections
+const menus_collection = client.db("BISTRO-BOSS").collection("menus");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+
+    app.get("/popular-menus", async (req, res) => {
+      const query = { category: "popular" };
+      const result = await menus_collection.find(query).limit(6).toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log(
