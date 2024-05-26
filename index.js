@@ -28,14 +28,22 @@ const client = new MongoClient(uri, {
 
 // DB Collections
 const menus_collection = client.db("BISTRO-BOSS").collection("menus");
+const reviews_collection = client.db("BISTRO-BOSS").collection("reviews");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    // GET :: get popular menus from menus collection in database
     app.get("/popular-menus", async (req, res) => {
       const query = { category: "popular" };
       const result = await menus_collection.find(query).limit(6).toArray();
+      res.send(result);
+    });
+
+    // GET :: get all reviews from reviews collection in database
+    app.get("/reviews", async (req, res) => {
+      const result = await reviews_collection.find().toArray();
       res.send(result);
     });
 
