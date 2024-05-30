@@ -34,6 +34,17 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
+    // GET :: get menus from menus collection in database
+    app.get("/menus", async (req, res) => {
+      let query = {};
+      if (req.query?.category) {
+        query = { category: req.query.category };
+        // console.log(req.query.category);
+      }
+
+      const result = await menus_collection.find(query).limit(6).toArray();
+      res.send(result);
+    });
     // GET :: get popular menus from menus collection in database
     app.get("/popular-menus", async (req, res) => {
       const query = { category: "popular" };
