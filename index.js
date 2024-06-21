@@ -29,6 +29,7 @@ const client = new MongoClient(uri, {
 // DB Collections
 const menus_collection = client.db("BISTRO-BOSS").collection("menus");
 const reviews_collection = client.db("BISTRO-BOSS").collection("reviews");
+const cart_collection = client.db("BISTRO-BOSS").collection("cart");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -55,6 +56,21 @@ async function run() {
     // GET :: get all reviews from reviews collection in database
     app.get("/reviews", async (req, res) => {
       const result = await reviews_collection.find().toArray();
+      res.send(result);
+    });
+
+    // cart collection
+    // POST :: add an new cart item to the cart collection in database
+    app.post("/cart", async (req, res) => {
+      const newItem = req.body;
+      // console.log(newItem);
+      const result = await cart_collection.insertOne(newItem);
+      res.send(result);
+    });
+    // GET :: get cart items from the cart collection in database
+    app.get("/cart", async (req, res) => {
+      const query = { email: req?.query?.email };
+      const result = await cart_collection.find(query).toArray();
       res.send(result);
     });
 
