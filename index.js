@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const app = express();
@@ -73,6 +73,12 @@ async function run() {
       const result = await cart_collection.find(query).toArray();
       res.send(result);
     });
+    // DELETE :: delete cart item from the cart collection in database
+    app.delete("/cart/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req?.params?.id) };
+      const result = await cart_collection.deleteOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
@@ -85,6 +91,7 @@ async function run() {
   }
 }
 run().catch(console.dir);
+``;
 
 app.get("/", (req, res) => {
   res.send("The Bistro Boss server is running...");
