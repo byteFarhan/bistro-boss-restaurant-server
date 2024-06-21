@@ -48,6 +48,31 @@ async function run() {
       res.send(result);
     });
 
+    // GET :: get users from users collection in database
+    app.get("/users", async (req, res) => {
+      const result = await users_collection.find().toArray();
+      res.send(result);
+    });
+    // DELETE :: delete user from users collection in database
+    app.delete("/users/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await users_collection.deleteOne(query);
+      res.send(result);
+    });
+    // PATCH :: patch user info from users collection in database
+    app.patch("/user/admin/:id", async (req, res) => {
+      // const userInfo = req.body;
+      const filter = { _id: new ObjectId(req.params.id) };
+      // console.log(filter);
+      const updatedInfo = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await users_collection.updateOne(filter, updatedInfo);
+      res.send(result);
+    });
+
     // GET :: get menus from menus collection in database
     app.get("/menus", async (req, res) => {
       let query = {};
