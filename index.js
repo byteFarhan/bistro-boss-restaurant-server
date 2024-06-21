@@ -27,6 +27,7 @@ const client = new MongoClient(uri, {
 });
 
 // DB Collections
+const users_collection = client.db("BISTRO-BOSS").collection("users");
 const menus_collection = client.db("BISTRO-BOSS").collection("menus");
 const reviews_collection = client.db("BISTRO-BOSS").collection("reviews");
 const cart_collection = client.db("BISTRO-BOSS").collection("cart");
@@ -34,6 +35,18 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    // Users collecton
+    // POST :: add an new user to the users collection in database
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      let query = { email: user?.email };
+      const isUserExist = await users_collection.findOne(query);
+      if (isUserExist) {
+        return res.send({ message: "user already exists!", insertedId: null });
+      }
+      const result = await users_collection.insertOne(user);
+      res.send(result);
+    });
 
     // GET :: get menus from menus collection in database
     app.get("/menus", async (req, res) => {
