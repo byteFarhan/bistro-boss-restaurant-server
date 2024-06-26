@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+var jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
@@ -35,6 +36,16 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    // Jwt related api's
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
+      // console.log(token);
+      res.send({ token });
+    });
+
     // Users collecton
     // POST :: add an new user to the users collection in database
     app.post("/users", async (req, res) => {
@@ -50,16 +61,18 @@ async function run() {
 
     // GET :: get users from users collection in database
     app.get("/users", async (req, res) => {
+      // console.log("test", req.headers);
       const result = await users_collection.find().toArray();
       res.send(result);
     });
+
     // DELETE :: delete user from users collection in database
     app.delete("/users/:id", async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const result = await users_collection.deleteOne(query);
       res.send(result);
     });
-    // PATCH :: patch user info from users collection in database
+    // PATCH :: update user info from users collection in database
     app.patch("/user/admin/:id", async (req, res) => {
       // const userInfo = req.body;
       const filter = { _id: new ObjectId(req.params.id) };
